@@ -4,7 +4,6 @@ import numpy as np
 path = 'Data.mat'
 data = sio.loadmat(path)
 delays = data['Delays'][5:135, 0]
-print(delays.shape)
 Timezero = delays[5]
 ROI = data['ROIintNorm'][0, 0]['mean']
 Qx = data['QxNorm'][0, 0]['mean']
@@ -14,24 +13,24 @@ I2 = ROI[5:135, 2]
 Qr2 = Qr[5:135, 2]
 
 
-def Dfunction(A,tdamp,Period,phi):
-    delta_d = A*np.exp(-delays/tdamp)*np.cos(2*np.pi*delays/Period+phi)
+def Dfunction(A,tdamp,Period):
+    delta_d = A*np.exp(-delays/tdamp)*np.cos(2*np.pi*delays/Period)
     return delta_d
-def sfunction(k, s0,A,tdamp,Period,phi):
-    s = k*Dfunction(A,tdamp,Period,phi)+s0
+def sfunction(k, s0,A,tdamp,Period):
+    s = k*Dfunction(A,tdamp,Period)+s0
     return s
 
 
-def Ifunction(xi_g, l, beta, tau, k, s0, A,tdamp,Period,phi):
-    frac2 = 1+(xi_g*sfunction(k,s0,A,tdamp,Period,phi))**2
+def Ifunction(xi_g, l, beta, tau, k, s0, A,tdamp,Period):
+    frac2 = 1+(xi_g*sfunction(k,s0,A,tdamp,Period))**2
     frac1 = np.sin(np.pi*l*np.sqrt(frac2)/xi_g)**2
     frac3 = (1-beta+beta*np.exp(-delays/tau))
     I = frac1*frac3/frac2
     return I
 
 
-def output(xi_g, l, beta, tau, k, s0,A,tdamp,Period,phi):
-    I = Ifunction(xi_g, l, beta, tau, k, s0,A,tdamp,Period,phi)
+def output(xi_g, l, beta, tau, k, s0,A,tdamp,Period):
+    I = Ifunction(xi_g, l, beta, tau, k, s0,A,tdamp,Period)
     I0 = I[0]
     ratio = (I - I0)/I0
     return ratio
@@ -147,14 +146,14 @@ def output(xi_g, l, beta, tau, k, s0,A,tdamp,Period,phi):
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[7.116907860326869, 0.11475506927267327, 37.448059756741586, 21.026579459458937, 0.012127867153108762, 224.874571799234, 0.0002984136843706382, 83.07706638268168, 83.13822220978591, -0.7135572775125507]#4.3
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[6.897022816174391, 0.11476818612423122, 37.44357610472721, 21.021846204917956, 0.012775467613457202, 271.20756652485494, 0.00030678965981912124, 85.31798273147504, 82.99376032214923, -0.7104886291295281]#4.4
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[0.04534562330563463, 0.11670110724850419, 37.07004667382929, 20.685893496925463, 0.01819764889906327, 626.781836433764, 0.045336495274129494, 87.23744178601267, 83.00725427214945, -0.711923085973283]#4.5
-k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[0.04524547728640656, 0.11700898847432833, 37.015771642528364, 20.632806300039096, 0.02166922706447096, 825.0083792679802, 0.0452451844858905, 88.43765967844969, 82.91777927425903, -0.7105963646864378]#4.6
-A = 0.000526022188918724
+# k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[0.04524547728640656, 0.11700898847432833, 37.015771642528364, 20.632806300039096, 0.02166922706447096, 825.0083792679802, 0.0452451844858905, 88.43765967844969, 82.91777927425903, -0.7105963646864378]#4.6
+# A = 0.000526022188918724
 # plt.figure(1)
 # plt.plot(delays[:],I2[:])
 # plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period,phi))
-plt.figure()
-plt.plot(delays,Qr2)
-plt.plot(delays,Dfunction(A,tdamp,Period,phi)*0.023)
+# plt.figure()
+# plt.plot(delays,Qr2)
+# plt.plot(delays,Dfunction(A,tdamp,Period,phi)*0.023)
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[-0.024636867985090464, 0.16464726475724192, 24.106222129994386, 20.482345604090497, 1.3050847959121315e-13, 82.23675079089617, 0.07131708511709545, 551.0238129070931, 70.0105838507083, 2.811758869378817]
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[-0.01031362813008135, 0.18040605425270817, 23.92691679792456, 20.333198240148114, -0.004727207420026125, 7.522175334273499, 0.010313628130081373, 93.89476191634894, 82.00121860027512, 2.2386693875428345] #v4.1
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[-0.01022276932169172, 0.1815792906428479, 23.79768052880697, 20.212864749385304, -0.005764209892585393, 7.998475357098753, 0.010222769321691711, 94.89992251851103, 81.53695468329836, 2.199129483847944]#4.2
@@ -173,4 +172,12 @@ plt.plot(delays,Dfunction(A,tdamp,Period,phi)*0.023)
 # plt.figure(5)
 # plt.plot(delays[:],I2[:])
 # plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period,phi))
+
+
+#v6.0
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.025402967308099766, 0.0004115711966468302, 34.73612084706033, 21.211817842639714, 2.421182708379676e-14, 94.88102026761116, 0.09681848908851809, 918.8610611104808, 73.42968204793299]
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.002932089825507004, 0.03106266382007767, 34.71317598311107, 21.188468980349693, -0.011906531304391428, 42.88852237449378, 0.0039046370206147294, 868.7153091171148, 88.5781887162189]
+plt.figure()
+plt.plot(delays[:],I2[:])
+plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 plt.show()
