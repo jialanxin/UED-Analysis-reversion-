@@ -14,7 +14,7 @@ Qy = data['QyNorm'][0, 0]['mean']
 Qr = data['QrNorm'][0, 0]['mean']
 I2 = ROI[5:135, 2].reshape((130, 1))
 
-k, s0, xi_g, l, beta, tau, A, tdamp, Period = [0.025402967308099766, 0.0004115711966468302, 34.73612084706033, 21.211817842639714, 2.421182708379676e-14, 94.88102026761116, 0.09681848908851809, 918.8610611104808, 73.42968204793299]
+k, s0, xi_g, l, beta, tau, A, tdamp, Period =[-0.014552258365648323, 0.10633795406511092, 20.18595495253185, 12.147827596447192, 0.021517254204924254, 1466.6548495398872, 0.2702387912251527, 1261.7889322740823, 204.03711616311742]
 
 
 class Net(nn.Module):
@@ -54,10 +54,10 @@ y=torch.from_numpy(I2).double()
 
 model=Net()
 criterion=torch.nn.MSELoss(reduction='sum')
-optimizer=torch.optim.Adam(model.parameters(), lr=1e-4)
+optimizer=torch.optim.Adam(model.parameters())#, lr=1e-4)
 
 bestloss=1
-for i in range(1000000):
+for i in range(3000000):
     y_pred=model(x)
     loss=criterion(y_pred, y)
     if i % 10000 == 0:

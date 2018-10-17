@@ -54,27 +54,26 @@ def main():
     l = np.random.uniform(20,50)
     beta = np.random.uniform(0,1)
     tau = np.random.uniform(1,100)
-    A = np.random.uniform(0,0.1)
+    A = np.random.uniform(0,1)
     tdamp = np.random.uniform(0,600)
-    Period = np.random.uniform(50,80)
-
+    Period = np.random.uniform(50,100)
     T = 10000
-    Tmin = 1e-10
+    Tmin = 1e-5
     numin = 100
     while T>=Tmin:
         i = 0
         while i <= numin:
             y = lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period)
-            kNew = k+np.random.uniform(-0.0005,0.0005)*T
-            s0New = s0+np.random.uniform(-1e-5,1e-5)*T
-            xi_gNew = xi_g+np.random.uniform(-0.02,0.02)*T
-            lNew = l+np.random.uniform(-0.003,0.003)*T
-            betaNew = beta+np.random.uniform(-0.005,0.005)*T
-            tauNew = tau+np.random.uniform(-0.01,0.01)*T
-            ANEw = A+np.random.uniform(-1e-6,1e-6)*T
-            tdampNew  = tdamp+np.random.uniform(-0.06,0.06)*T
-            PeriodNew = Period+np.random.uniform(-0.003,0.003)*T
-            if (20<lNew and 50>lNew  and -0.5<s0New and 0.5>s0New and 10<xi_gNew and 200>xi_gNew and 0<betaNew and 1>betaNew and 1<tauNew and 100> tauNew and tdampNew>0 and PeriodNew>50 and PeriodNew<80):  #and 0<kNew and 1>kNew  
+            kNew = k+np.random.uniform(-0.0005,0.0005)*T/10
+            s0New = s0+np.random.uniform(-1e-5,1e-5)*T/10
+            xi_gNew = xi_g+np.random.uniform(-0.02,0.02)*T/10
+            lNew = l+np.random.uniform(-0.003,0.003)*T/10
+            betaNew = beta+np.random.uniform(-0.005,0.005)*T/10
+            tauNew = tau+np.random.uniform(-0.01,0.01)*T/10
+            ANEw = A+np.random.uniform(-1e-6,1e-6)*T/10
+            tdampNew  = tdamp+np.random.uniform(-0.06,0.06)*T/10
+            PeriodNew = Period+np.random.uniform(-0.003,0.003)*T/10
+            if (10<lNew  and -0.5<s0New and 0.5>s0New and 10<xi_gNew and 200>xi_gNew and 0<betaNew and 1>betaNew and 1<tauNew  and tdampNew>0 and PeriodNew>50 and ANEw>0):  #and 0<kNew and 1>kNew  
                 yNew = lossfunction(xi_gNew,lNew,betaNew,tauNew,kNew,s0New,ANEw,tdampNew,PeriodNew)
                 if yNew<y:
                     k = kNew
@@ -86,6 +85,7 @@ def main():
                     A = ANEw
                     tdamp = tdampNew
                     Period = PeriodNew
+                    i = i+1
                 else:
                     p = np.exp((y-yNew)/T)
                     r = np.random.uniform(0,1)
@@ -99,7 +99,8 @@ def main():
                         A = ANEw
                         tdamp = tdampNew
                         Period = PeriodNew
-                i = i+1
+                        i = i+1
+                
         T = 0.999*T
         print(T)
         print(y)
