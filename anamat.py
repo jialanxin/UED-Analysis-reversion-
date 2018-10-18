@@ -73,7 +73,7 @@ def main():
             ANEw = A+np.random.uniform(-1e-6,1e-6)*T/10
             tdampNew  = tdamp+np.random.uniform(-0.06,0.06)*T/10
             PeriodNew = Period+np.random.uniform(-0.003,0.003)*T/10
-            if (10<lNew  and -0.5<s0New and 0.5>s0New and 10<xi_gNew and 200>xi_gNew and 0<betaNew and 1>betaNew and 1<tauNew  and tdampNew>0 and PeriodNew>50 and ANEw>0):  #and 0<kNew and 1>kNew  
+            if (10<lNew  and -0.5<s0New and 0.5>s0New and 10<xi_gNew and 200>xi_gNew and 0<betaNew and 1>betaNew and 1<tauNew  and tdampNew>0 and PeriodNew>50 and PeriodNew<120 and ANEw>0):  #and 0<kNew and 1>kNew  
                 yNew = lossfunction(xi_gNew,lNew,betaNew,tauNew,kNew,s0New,ANEw,tdampNew,PeriodNew)
                 if yNew<y:
                     k = kNew

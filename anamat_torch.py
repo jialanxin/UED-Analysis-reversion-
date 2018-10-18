@@ -1,5 +1,4 @@
 import scipy.io as sio
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import math
@@ -14,7 +13,7 @@ Qy = data['QyNorm'][0, 0]['mean']
 Qr = data['QrNorm'][0, 0]['mean']
 I2 = ROI[5:135, 2].reshape((130, 1))
 
-k, s0, xi_g, l, beta, tau, A, tdamp, Period =[-0.014552258365648323, 0.10633795406511092, 20.18595495253185, 12.147827596447192, 0.021517254204924254, 1466.6548495398872, 0.2702387912251527, 1261.7889322740823, 204.03711616311742]
+k, s0, xi_g, l, beta, tau, A, tdamp, Period =[0.0013670102847340077, -0.006535738016287347, 74.72187738442261, 95.33507109884502, 1.1374190459599259e-07, 1785.8241343442744, 0.5916465089083937, 3821.1411946255557, 81.67989288653281]
 
 
 class Net(nn.Module):
@@ -54,7 +53,7 @@ y=torch.from_numpy(I2).double()
 
 model=Net()
 criterion=torch.nn.MSELoss(reduction='sum')
-optimizer=torch.optim.Adam(model.parameters())#, lr=1e-4)
+optimizer=torch.optim.Adam(model.parameters())#, lr=5e-4)
 
 bestloss=1
 for i in range(3000000):
