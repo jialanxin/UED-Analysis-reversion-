@@ -1,5 +1,4 @@
 import scipy.io as sio
-import matplotlib.pyplot as plt
 import numpy as np
 from numba import jit
 path = 'Data.mat'

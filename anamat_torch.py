@@ -13,7 +13,7 @@ Qy = data['QyNorm'][0, 0]['mean']
 Qr = data['QrNorm'][0, 0]['mean']
 I2 = ROI[5:135, 2].reshape((130, 1))
 
-k, s0, xi_g, l, beta, tau, A, tdamp, Period =[0.0013670102847340077, -0.006535738016287347, 74.72187738442261, 95.33507109884502, 1.1374190459599259e-07, 1785.8241343442744, 0.5916465089083937, 3821.1411946255557, 81.67989288653281]
+k, s0, xi_g, l, beta, tau, A, tdamp, Period=[0.021353060726865384, 0.06809415547786958, 62.13348614209503, 21.503474876869095, 4.07884845114437e-08, 2728.2661918222293, 0.0167652347105141, 4653.552869438972, 85.27383298984829]
 
 
 class Net(nn.Module):
@@ -62,8 +62,13 @@ for i in range(3000000):
     if i % 10000 == 0:
         print(i, loss.item())
         if loss.item() < bestloss:
-            print([model.k.item(), model.s0.item(), model.xi_g.item(), model.l.item(), model.beta.item(
-            ), model.tau.item(), model.A.item(), model.tdamp.item(), model.Period.item()])
+            result = [model.k.item(), model.s0.item(), model.xi_g.item(), model.l.item(), model.beta.item(
+            ), model.tau.item(), model.A.item(), model.tdamp.item(), model.Period.item()]
+            print(result)
+            file = open('explog.txt','a')
+            file.write(str(loss.item())+'\n')
+            file.write(str(result)+'\n')
+            file.close()
             bestloss=loss.item()
     optimizer.zero_grad()
     loss.backward()
