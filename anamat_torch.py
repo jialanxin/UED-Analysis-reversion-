@@ -4,6 +4,7 @@ import torch
 import math
 import torch.nn as nn
 import random
+from torch.optim.lr_scheduler import StepLR
 path = 'Data.mat'
 data = sio.loadmat(path)
 delays = data['Delays'][5:135, 0].reshape((130, 1))
@@ -14,7 +15,15 @@ Qr = data['QrNorm'][0, 0]['mean']
 I2 = ROI[5:135, 2].reshape((130, 1))
 
 k, s0, xi_g, l, beta, tau, A, tdamp, Period=[0.021353060726865384, 0.06809415547786958, 62.13348614209503, 21.503474876869095, 4.07884845114437e-08, 2728.2661918222293, 0.0167652347105141, 4653.552869438972, 85.27383298984829]
-
+k = np.random.uniform(-5,5)
+s0 = np.random.uniform(-0.1,0.1)
+xi_g = np.random.uniform(10,200)
+l = np.random.uniform(20,50)
+beta = np.random.uniform(0,1)
+tau = np.random.uniform(1,100)
+A = np.random.uniform(0,1)
+tdamp = np.random.uniform(0,600)
+Period = np.random.uniform(50,100)
 
 class Net(nn.Module):
     def __init__(self):
@@ -53,10 +62,11 @@ y=torch.from_numpy(I2).double()
 
 model=Net()
 criterion=torch.nn.MSELoss(reduction='sum')
-optimizer=torch.optim.Adam(model.parameters())#, lr=5e-4)
+optimizer=torch.optim.Adam(model.parameters())
+scheduler = StepLR(optimizer, step_size=2000000, gamma=0.5)
 
 bestloss=1
-for i in range(3000000):
+for i in range(10000000):
     y_pred=model(x)
     loss=criterion(y_pred, y)
     if i % 10000 == 0:
@@ -73,3 +83,4 @@ for i in range(3000000):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
+    scheduler.step()

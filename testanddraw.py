@@ -236,4 +236,8 @@ k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.042134980618378004, 0.0679333137096636, 5
 plt.figure(6)
 plt.plot(delays[:],I2[:])
 plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+xi_g,l,beta,tau,k,s0,A,tdamp,Period=[ 1.59988203e+02,  4.46904985e+01, -1.81872110e-02,  1.41720617e+01,-1.73710486e-03, -7.11447016e+00, -7.46505138e-04,  5.23407170e+02,4.80671389e+01]
+plt.figure(7)
+plt.plot(delays[:],I2[:])
+plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 plt.show()
