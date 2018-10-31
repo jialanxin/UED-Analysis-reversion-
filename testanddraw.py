@@ -3,14 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 path = 'Data.mat'
 data = sio.loadmat(path)
-delays = data['Delays'][5:135, 0]
+delays = data['Delays'][5:80, 0]
 Timezero = delays[5]
 ROI = data['ROIintNorm'][0, 0]['mean']
 Qx = data['QxNorm'][0, 0]['mean']
 Qy = data['QyNorm'][0, 0]['mean']
 Qr = data['QrNorm'][0, 0]['mean']
-I2 = ROI[5:135, 2]
-Qr2 = Qr[5:135, 2]
+I2 = ROI[5:80, 2]
+Qr2 = Qr[5:80, 2]
 
 
 def Dfunction(A,tdamp,Period):
@@ -34,6 +34,10 @@ def output(xi_g, l, beta, tau, k, s0,A,tdamp,Period):
     I0 = I[0]
     ratio = (I - I0)/I0
     return ratio
+def lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period):
+    distance = (output(xi_g, l, beta, tau, k, s0,A,tdamp,Period)-I2)*100
+    loss = np.sum(np.power(distance,2))
+    return loss
 
 
 # #No.3 Peak
@@ -206,37 +210,95 @@ def output(xi_g, l, beta, tau, k, s0,A,tdamp,Period):
 
 #v6.1
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.0013670102847340077, -0.006535738016287347, 74.72187738442261, 95.33507109884502, 1.1374190459599259e-07, 1785.8241343442744, 0.5916465089083937, 3821.1411946255557, 81.67989288653281]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.02671286273547126, -0.007659547407356001, 76.21072942322441, 93.54541397128534, -0.005961243731839883, 1641.79479797605, 0.026712862735471285, 3160.5720476046213, 80.29611585944954]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.027749433341282194, -0.008823674448034561, 77.20145776422812, 90.68349062504629, 0.018565974918870003, 1624.9050150066314, 0.027749433341282118, 958.22738732788, 80.83130479307344]
-plt.figure(1)
-plt.plot(delays[:],I2[:])
-plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(1)
+# plt.plot(delays[:],I2[:])
+# plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-0.11277820098643956, -0.03063224089565105, 104.96118341440702, 25.1346745320804, 3.521715730544723e-09, 1226.5104090351363, 0.00033221255174662064, 4519.493714541855, 72.5702366959458]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-0.014367214393354758, -0.026773135505149367, 114.76437290322258, 6.011860299133392, -0.014576457229115443, 16.586597902541424, 0.014367214393354713, 3094.3965107225154, 80.6661641569962]
-plt.figure(2)
-plt.plot(delays[:],I2[:])
-plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(2)
+# plt.plot(delays[:],I2[:])
+# plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-2.719875445785884, 0.0015374349083913006, 141.5167807023351, 173.46671610428896, 6.378188413462189e-09, 2047.063662119017, 2.3002511705685797e-05, 2273.3238525472357, 64.7019009438598]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-0.022606659752523586, -0.0012907846489571525, 123.07999709828874, 180.20904729075346, 0.034857176820928766, 2154.47395683819, 0.022606659752258684, 79.98861842292533, 101.27933541464131]
-plt.figure(3)
-plt.plot(delays[:],I2[:])
-plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(3)
+# plt.plot(delays[:],I2[:])
+# plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.009787001615265847, 0.12348309894961516, 161.5079068485195, 11.639363820440732, 0.03717444759215901, 1961.2678129101598, 0.3571594774772618, 578.4311987292704, 87.43789598978155]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.05088566005391307, 0.13201987028018472, 160.8165024916813, 10.996898206979358, 0.04188656685941563, 2429.6721226347645, 0.05088566005392245, 87.44735739820888, 99.56935309666775]
-plt.figure(4)
-plt.plot(delays[:],I2[:])
-plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(4)
+# plt.plot(delays[:],I2[:])
+# plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-0.11796239674060788, -0.06572629723803179, 129.56220161189327, 21.7541554737817, 4.043629973640845e-09, 446.47158879595054, 0.013519549295346687, 7553.583285691055, 86.46704571419662]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-0.004737617100669105, -0.08407864317388339, 127.76562993835019, 19.374211538167113, -0.014132794035363789, 16.828369653654626, 0.004737617100669131, 7073.544756751724, 88.59875522417677]
-plt.figure(5)
-plt.plot(delays[:],I2[:])
-plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(5)
+# plt.plot(delays[:],I2[:])
+# plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.021353060726865384, 0.06809415547786958, 62.13348614209503, 21.503474876869095, 4.07884845114437e-08, 2728.2661918222293, 0.0167652347105141, 4653.552869438972, 85.27383298984829]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.042134980618378004, 0.0679333137096636, 58.71278393556958, 20.56466438656926, 0.008069865450999008, 2399.91909756062, 0.04213498061837828, 1784.8566676809198, 85.37046407455676]
-plt.figure(6)
-plt.plot(delays[:],I2[:])
-plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(6)
+# plt.plot(delays[:],I2[:])
+# plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 xi_g,l,beta,tau,k,s0,A,tdamp,Period=[ 1.59988203e+02,  4.46904985e+01, -1.81872110e-02,  1.41720617e+01,-1.73710486e-03, -7.11447016e+00, -7.46505138e-04,  5.23407170e+02,4.80671389e+01]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[10.0, -0.10000000149011612, 200.0, 60.0, 0.003915744865759147, 0.7555156130333966, 1.0000000116860974e-07, 74.25138529533034, 100.49547595851752]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[18.939977634378927, -0.10000000149011612, 137.67712688406905, 60.0, 1.0000000116860974e-07, 1.0000000116860974e-07, 1.0000000116860974e-07, 90.3815594983474, 101.38382300462528]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[15.50728542347391, -0.10000000149011612, 200.0, 60.0, 0.01984685925496434, 1.1292871974141527, 1.0000000116860974e-07, 50.66929016926171, 104.12895389256562]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[15.20908411541069, -0.10000000149011612, 177.03576189202403, 20.0, 0.004989278909373198, 100.0, 1.0000000116860974e-07, 57.18528392238193, 107.11603107528357]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-20.0, 0.10000000149011612, 155.50705899534717, 60.0, 0.0052688666326317635, 100.0, 1.0000000116860974e-07, 55.8891679530352, 108.82061048506604]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-13.449341517817018, 0.10000000149011612, 200.0, 80.0, 0.008944614546625436, 200.0, 1.0000000116860974e-07, 40.724643157374324, 120.0]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-8.97032301570425, 0.15000000596046448, 199.98578831047962, 80.0, 0.008993697115706467, 200.0, 1.0000000116860974e-07, 39.82273637932198, 120.0]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-10.926979679729248, 0.20000000298023224, 155.5790313029995, 80.0, 0.008569973700869097, 200.0, 1.0000000116860974e-07, 40.849165624197916, 120.0]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-27.865596457259997, 0.30000001192092896, 81.18921238383149, 30.0, 0.011064107962310209, 300.0, 1.0000000116860974e-07, 32.96283781840904, 140.0]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-30.0, 0.4000000059604645, 68.80275585879495, 120.0, 0.013625269037509696, 400.0, 1.0000000116860974e-07, 29.38209156913301, 180.0]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-1.9590971762601155, 0.800000011920929, 180.7815717300161, 240.0, 0.015549781635743987, 800.0, 1.0000000116860974e-07, 30.505927091212737, 157.808605985787]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-4.262957500860891, 0.800000011920929, 126.8883663229139, 240.0, 0.019518215897095705, 800.0, 1.0000000116860974e-07, 30.296948773422667, 264.52128219181367]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-60.0, 0.9720334362384571, 10.0, 277.47849861807236, 0.024996727652430172, 1184.649885884481, 1.0000000116860974e-07, 24.769958599583795, 260.5498029153867]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-32.48740728178952, 1.600000023841858, 81.97788943411945, 285.0417539108241, 0.02631635592935457, 1135.22105275527, 1.0000000116860974e-07, 25.45298278881243, 360.0]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-40.68125687520003, 1.025454022564196, 55.60963515220627, 319.91869173117647, 0.02802972073216052, 1224.5669156275574, 1.0000000116860974e-07, 28.533361885834974, 355.76594182426726]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-47.647311275012676, 0.14561519803286505, 50.52747591238019, 443.45715429326947, 0.036721424206511935, 1600.0, 1.0000000116860974e-07, 33.75517912987662, 360.0]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-30.96978486505606, 1.0505107485937648, 53.956149338869885, 269.4113653723139, 0.020393419229951814, 0.8510334037432239, 1.0000000116860974e-07, 48.4865550271472, 113.61044215615999]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-60.0, 1.5608956822987443, 41.266629663224634, 317.8175708271909, 0.09288876182295802, 0.3134092651642682, 1.0000000116860974e-07, 42.93018112090387, 109.35367639340842]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-30.96890676760426, 1.0519850744622259, 53.95467854817096, 269.4128515523135, 0.030043034404195566, 0.8639467905665054, 3.51273546622157e-06, 48.10365637135125, 113.22376240511556]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-100.0, 0.8628959134012782, 116.75087009971965, 417.54435932153297, 0.5420595193428672, 1.0000000116860974e-07, 1.0000000116860974e-07, 65.02095085461418, 103.03560554213779]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-18.472477612194936, 1.600000023841858, 49.98481978762447, 480.0, 0.11491280274158173, 0.3250887986816123, 1.0000000116860974e-07, 41.007107555646286, 107.0293670716278]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-2.6027870817045917, 1.600000023841858, 131.66772767751732, 480.0, 0.27983768926922997, 0.22310169224589896, 1.0000000116860974e-07, 38.35623003114755, 109.47879663515496]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 plt.figure(7)
 plt.plot(delays[:],I2[:])
 plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))

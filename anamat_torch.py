@@ -7,23 +7,15 @@ import random
 from torch.optim.lr_scheduler import StepLR
 path = 'Data.mat'
 data = sio.loadmat(path)
-delays = data['Delays'][5:135, 0].reshape((130, 1))
+delays = data['Delays'][5:80, 0].reshape((75, 1))
 ROI = data['ROIintNorm'][0, 0]['mean']
 Qx = data['QxNorm'][0, 0]['mean']
 Qy = data['QyNorm'][0, 0]['mean']
 Qr = data['QrNorm'][0, 0]['mean']
-I2 = ROI[5:135, 2].reshape((130, 1))
+I2 = ROI[5:80, 2].reshape((75, 1))
 
-k, s0, xi_g, l, beta, tau, A, tdamp, Period=[0.021353060726865384, 0.06809415547786958, 62.13348614209503, 21.503474876869095, 4.07884845114437e-08, 2728.2661918222293, 0.0167652347105141, 4653.552869438972, 85.27383298984829]
-k = np.random.uniform(-5,5)
-s0 = np.random.uniform(-0.1,0.1)
-xi_g = np.random.uniform(10,200)
-l = np.random.uniform(20,50)
-beta = np.random.uniform(0,1)
-tau = np.random.uniform(1,100)
-A = np.random.uniform(0,1)
-tdamp = np.random.uniform(0,600)
-Period = np.random.uniform(50,100)
+k, s0, xi_g, l, beta, tau, A, tdamp, Period=[0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5]
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -57,16 +49,22 @@ class Net(nn.Module):
         output=I.sub(I0).div(I0)
         return output
 
-x=torch.from_numpy(delays).double().requires_grad_()
-y=torch.from_numpy(I2).double()
+delays = torch.from_numpy(delays)
+I2 = torch.from_numpy(I2)
+
 
 model=Net()
 criterion=torch.nn.MSELoss(reduction='sum')
-optimizer=torch.optim.Adam(model.parameters())
-scheduler = StepLR(optimizer, step_size=2000000, gamma=0.5)
+optimizer=torch.optim.Adam(model.parameters(),lr = 1e-5)
 
 bestloss=1
 for i in range(10000000):
+    ram_mask = torch.rand_like(delays).sub(0.75).ceil()
+    ram_mask[0]=1
+    ram_mask = ram_mask.byte()
+    num = torch.sum(ram_mask).item()
+    x = torch.masked_select(delays,ram_mask).double().requires_grad_().reshape((num,1))
+    y = torch.masked_select(I2,ram_mask).double().reshape((num,1))
     y_pred=model(x)
     loss=criterion(y_pred, y)
     if i % 10000 == 0:
@@ -83,4 +81,4 @@ for i in range(10000000):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    scheduler.step()
+
