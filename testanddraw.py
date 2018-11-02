@@ -299,6 +299,10 @@ k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-18.472477612194936, 1.600000023841858, 49.
 print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-2.6027870817045917, 1.600000023841858, 131.66772767751732, 480.0, 0.27983768926922997, 0.22310169224589896, 1.0000000116860974e-07, 38.35623003114755, 109.47879663515496]
 print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-0.3903171545979099, 6.007453376468793e-05, 173.9737929675735, 1.6024255835194285, 0.02114994371610727, 800.0, 0.13820811618949536, 179.58237320365328, 196.4095253813857]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.677984438535062, 0.0, 11.177879588637706, 0.1743587370079215, 0.021257340829257454, 799.9999999460496, 0.7307965170360465, 180.26992107573307, 196.33988972062807]
+print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 plt.figure(7)
 plt.plot(delays[:],I2[:])
 plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))

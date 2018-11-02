@@ -19,8 +19,8 @@ I2 = ROI[5:80, 2]
 class ParticleGroup():
     def __init__(self,group_size,weight,c1,c2):
         self.group_size = group_size
-        self.x_down_group = torch.Tensor([-120.0,0.0,10.0,1e-7,1e-7,1e-7,1e-7,1e-7,50.0]).repeat((group_size,1)).double()
-        self.x_up_group = torch.Tensor([10.0,1.6,200.0,480.0,1.0,800.0,1.0,600.0,360.0]).repeat((group_size,1)).double()
+        self.x_down_group = torch.Tensor([-120.0,-1.6,10.0,1e-7,1e-7,1e-7,1e-7,1e-7,50.0]).repeat((group_size,1)).double()
+        self.x_up_group = torch.Tensor([10.0,1.6,200.0,480.0,1.0,1600.0,1.0,600.0,360.0]).repeat((group_size,1)).double()
         self.x_cur_group = self.ramdom_generator().double()
         self.v_cur_group = self.x_cur_group.div(5)
         self.v_up_group = self.x_up_group.div(5)
@@ -47,7 +47,7 @@ class ParticleGroup():
         A = self.x_cur_group[:,6].reshape((self.group_size,1))
         tdamp = self.x_cur_group[:,7].reshape((self.group_size,1))
         Period = self.x_cur_group[:,8].reshape((self.group_size,1))
-        d = torch.exp(self.input_data.neg().div(tdamp)).mul(torch.cos(self.input_data.mul(2*math.pi).div(Period))).mul(A)
+        d = torch.exp(self.input_data.neg().div(tdamp)).mul(torch.sin(self.input_data.mul(2*math.pi).div(Period))).mul(A)
         del A,tdamp,Period
         gc.collect()
         k = self.x_cur_group[:,0].reshape((self.group_size,1))
@@ -147,7 +147,7 @@ class ParticleGroup():
 
     
 
-particlegroup = ParticleGroup(1200000,0.0,3.0,3.0)
+particlegroup = ParticleGroup(2000000,1.5471, 1.8001,  1.1860)
 for i in range(100):
     print('epoch',i)
     particlegroup.evolution()
