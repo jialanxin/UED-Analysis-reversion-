@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import torch
+import torch.multiprocessing as mp
 import gc
 path = 'Data.mat'
 data = sio.loadmat(path)
@@ -17,10 +18,11 @@ I2 = ROI[5:80, 2]
 
 
 class ParticleGroup():
-    def __init__(self,group_size,weight,c1,c2):
+    def __init__(self,group_size,weight,c1,c2,name):
+        self.name = name
         self.group_size = group_size
-        self.x_down_group = torch.Tensor([-120.0,-1.6,10.0,1e-7,1e-7,1e-7,1e-7,1e-7,50.0]).repeat((group_size,1)).double()
-        self.x_up_group = torch.Tensor([10.0,1.6,200.0,480.0,1.0,1600.0,1.0,600.0,360.0]).repeat((group_size,1)).double()
+        self.x_down_group = torch.Tensor([-120.0,-1.6,1.0,1e-7,1e-7,1e-7,1e-7,1e-7,65.0]).repeat((group_size,1)).double()
+        self.x_up_group = torch.Tensor([10.0,1.6,200.0,480.0,1.0,1600.0,10.0,600.0,85.0]).repeat((group_size,1)).double()
         self.x_cur_group = self.ramdom_generator().double()
         self.v_cur_group = self.x_cur_group.div(5)
         self.v_up_group = self.x_up_group.div(5)
@@ -33,8 +35,9 @@ class ParticleGroup():
         print('loss finished')
         self.x_history_best_group = self.x_cur_group
         self.loss_history_best_total,self.index = torch.min(self.loss_history_best_group,0)
+        print(self.loss_history_best_total)
         self.x_history_best_total = self.x_history_best_group[self.index,:]   
-        print('all finished')
+        print(self.x_history_best_total)
         self.weight = weight
         self.c1 = c1
         self.c2 = c2
@@ -47,7 +50,7 @@ class ParticleGroup():
         A = self.x_cur_group[:,6].reshape((self.group_size,1))
         tdamp = self.x_cur_group[:,7].reshape((self.group_size,1))
         Period = self.x_cur_group[:,8].reshape((self.group_size,1))
-        d = torch.exp(self.input_data.neg().div(tdamp)).mul(torch.sin(self.input_data.mul(2*math.pi).div(Period))).mul(A)
+        d = torch.exp(self.input_data.neg().div(tdamp)).mul(torch.cos(self.input_data.mul(2*math.pi).div(Period))).mul(A)
         del A,tdamp,Period
         gc.collect()
         k = self.x_cur_group[:,0].reshape((self.group_size,1))
@@ -71,15 +74,11 @@ class ParticleGroup():
         I=frac2.mul(frac3).div(frac1)
         del frac1,frac2,frac3
         gc.collect()
-        I0 = I[:,0].reshape((self.group_size,1))
-        NI = I.sub(I0).div(I0)
-        del I,I0
-        gc.collect()
-        Loss = torch.sum(self.validation_data.sub(NI).pow(2),1,keepdim = True)
+        Loss = torch.sum(self.validation_data.sub(I).pow(2),1,keepdim = True)
         where_are_nan = torch.isnan(Loss)
         source_inf = torch.full((where_are_nan.sum(),),float('inf')).double()
         Loss.masked_scatter_(where_are_nan,source_inf)
-        del NI, where_are_nan, source_inf
+        del I, where_are_nan, source_inf
         gc.collect()
         return Loss
     def GD(self,x):
@@ -132,31 +131,50 @@ class ParticleGroup():
             if torch.lt(loss_total_cur,self.loss_history_best_total):
                 self.x_history_best_total = self.x_history_best_group[index,:]
                 self.loss_history_best_total = loss_total_cur
-                print(particlegroup.loss_history_best_total.item())
-                print(particlegroup.x_history_best_total.tolist())
+                print(self.name)
+                print(self.loss_history_best_total.item())
+                print(self.x_history_best_total.tolist())
                 with open('x_history_best_total.txt', 'a') as file:
-                    file.write(str(particlegroup.loss_history_best_total.item())+'\n')
-                    file.write(str(particlegroup.x_history_best_total.tolist())+'\n')
+                    file.write(str(self.loss_history_best_total.item())+'\n')
+                    file.write(str(self.x_history_best_total.tolist())+'\n')
             del loss_total_cur, index
             gc.collect()
-    def end(self):
-        return self
-        
+
 
                 
 
     
 
-particlegroup = ParticleGroup(2000000,1.5471, 1.8001,  1.1860)
-for i in range(100):
-    print('epoch',i)
-    particlegroup.evolution()
-    print('evolution finished')
-    particlegroup.GD(i+1)
-    print('GD1 finished')
-    particlegroup.GD(i+1)
-    print('GD2 finished')
-    particlegroup.evaluate()
+particlegroup1 = ParticleGroup(400000,2.1292,2.6128,2.0528,'Group1')
+particlegroup2 = ParticleGroup(400000,1.6879,3.0000,0.9983,'Group2')
+def work1():
+    for i in range(1000):
+        print('epoch',i)
+        particlegroup1.evolution()
+        print('evolution finished')
+        particlegroup1.GD(i+1)
+        print('GD1 finished')
+        particlegroup1.GD(i+1)
+        print('GD2 finished')
+        particlegroup1.evaluate()
+def work2():
+    for i in range(1000):
+        print('epoch',i)
+        particlegroup2.evolution()
+        print('evolution finished')
+        particlegroup2.GD(i+1)
+        print('GD1 finished')
+        particlegroup2.GD(i+1)
+        print('GD2 finished')
+        particlegroup2.evaluate()
+
+if __name__ == '__main__':
+    p1 = mp.Process(target=work1)
+    p2 = mp.Process(target=work2)
+    p1.start()
+    p2.start()
+    p1.join()
+    p2.join()
 
 
 
