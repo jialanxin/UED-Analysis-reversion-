@@ -14,6 +14,7 @@ Qx = data['QxNorm'][0, 0]['mean']
 Qy = data['QyNorm'][0, 0]['mean']
 Qr = data['QrNorm'][0, 0]['mean']
 I2 = ROI[5:80, 2]
+Qr2 = Qr[5:80,2]
 
 
 
@@ -21,14 +22,15 @@ class ParticleGroup():
     def __init__(self,group_size,weight,c1,c2,name):
         self.name = name
         self.group_size = group_size
-        self.x_down_group = torch.Tensor([-120.0,-1.6,1.0,1e-7,1e-7,1e-7,1e-7,1e-7,65.0]).repeat((group_size,1)).double()
-        self.x_up_group = torch.Tensor([10.0,1.6,200.0,480.0,1.0,1600.0,10.0,600.0,85.0]).repeat((group_size,1)).double()
+        self.x_down_group = torch.Tensor([-120.0,-1.6,1.0,1e-7,1e-7,1e-7]).repeat((group_size,1)).double()
+        self.x_up_group = torch.Tensor([10.0,1.6,200.0,480.0,1.0,1600.0]).repeat((group_size,1)).double()
         self.x_cur_group = self.ramdom_generator().double()
         self.v_cur_group = self.x_cur_group.div(5)
         self.v_up_group = self.x_up_group.div(5)
         self.v_down_group = self.v_up_group.neg()
         print('v bound finished')
-        self.input_data = torch.from_numpy(delays).repeat((group_size,1)).double()
+        self.input_Qr2 = torch.from_numpy(Qr2).repeat((group_size,1)).double()
+        self.input_delays = torch.from_numpy(delays).repeat((group_size,1)).double()
         self.validation_data = torch.from_numpy(I2).repeat((group_size,1)).double()
         print('x-y finished')
         self.loss_history_best_group = self.Lossfunction()
@@ -42,17 +44,12 @@ class ParticleGroup():
         self.c1 = c1
         self.c2 = c2
     def ramdom_generator(self):   
-        x_init = torch.rand((self.group_size,9))
+        x_init = torch.rand((self.group_size,6))
         x_cat = x_init.mul(self.x_up_group.float().sub(self.x_down_group.float()).add(self.x_down_group.float()))
         print('ram gen finished')
         return x_cat
     def Lossfunction(self):
-        A = self.x_cur_group[:,6].reshape((self.group_size,1))
-        tdamp = self.x_cur_group[:,7].reshape((self.group_size,1))
-        Period = self.x_cur_group[:,8].reshape((self.group_size,1))
-        d = torch.exp(self.input_data.neg().div(tdamp)).mul(torch.cos(self.input_data.mul(2*math.pi).div(Period))).mul(A)
-        del A,tdamp,Period
-        gc.collect()
+        d = self.input_Qr2.neg()
         k = self.x_cur_group[:,0].reshape((self.group_size,1))
         s0 = self.x_cur_group[:,1].reshape((self.group_size,1))
         s = d.mul(k).add(s0)
@@ -68,7 +65,7 @@ class ParticleGroup():
         gc.collect()
         beta = self.x_cur_group[:,4].reshape((self.group_size,1))
         tau = self.x_cur_group[:,5].reshape((self.group_size,1))
-        frac3 = torch.exp(self.input_data.neg().div(tau)).mul(beta).add(1).sub(beta)
+        frac3 = torch.exp(self.input_delays.neg().div(tau)).mul(beta).add(1).sub(beta)
         del beta,tau
         gc.collect()
         I=frac2.mul(frac3).div(frac1)
@@ -145,8 +142,8 @@ class ParticleGroup():
 
     
 
-particlegroup1 = ParticleGroup(400000,2.1292,2.6128,2.0528,'Group1')
-particlegroup2 = ParticleGroup(400000,1.6879,3.0000,0.9983,'Group2')
+particlegroup1 = ParticleGroup(400000,0.3,3.0,0.3,'Group1')
+particlegroup2 = ParticleGroup(400000,0.3,3.0,3.0,'Group2')
 def work1():
     for i in range(1000):
         print('epoch',i)
