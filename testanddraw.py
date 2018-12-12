@@ -27,10 +27,36 @@ def output(xi_g, l, beta, tau, k, s0):
     frac3 = (1-beta+beta*np.exp(-delays/tau))
     I = frac1*frac3/frac2
     return I
-def lossfunction(xi_g,l,beta,tau,k,s0):
-    distance = (output(xi_g, l, beta, tau, k, s0)-I2)*100
-    loss = np.sum(np.power(distance,2))
-    return loss
+# def output(xi_g,l,beta,tau,k,s0,A,tdamp,Period,phi):
+#     delta_d = A*np.cos(2*np.pi*delays/Period+phi)*np.exp(-delays/tdamp)
+#     s = k*delta_d+s0
+#     frac2 = 1+(xi_g*s)**2
+#     frac1 = np.sin(np.pi*l*np.sqrt(frac2)/xi_g)**2
+#     frac3 = (1-beta+beta*np.exp(-delays/tau))
+#     I = frac1*frac3/frac2
+#     ratio = (I-I[0])/I[0]
+#     return ratio
+# def output(xi_g,l,beta,tau,k,s0,A,tdamp,Period):
+#     delta_d = -A*np.sin(2*np.pi*delays/Period)*np.exp(-delays/tdamp)
+#     s = k*delta_d+s0
+#     frac2 = 1+(xi_g*s)**2
+#     frac1 = np.sin(np.pi*l*np.sqrt(frac2)/xi_g)**2
+#     frac3 = (1-beta+beta*np.exp(-delays/tau))
+#     I = frac1*frac3/frac2
+#     return I
+# def output(K0, xi, l, beta, tau):
+#     s = K0-np.sqrt(K0**2-Qr2)
+#     frac2 = 1+(xi*s)**2
+#     frac1 = np.sin(np.pi*l*np.sqrt(frac2)/xi)**2
+#     frac3 = (1-beta+beta*np.exp(-delays/tau))
+#     I = frac1*frac3/frac2
+#     I0 = I[0]
+#     ratio = (I-I0)/I0
+#     return ratio
+# def lossfunction(K0, xi, l, beta, tau):
+#     distance = (output(K0, xi, l, beta, tau)-I2)*100
+#     loss = np.sum(np.power(distance,2))
+#     return loss
 
 
 # #No.3 Peak
@@ -143,14 +169,18 @@ def lossfunction(xi_g,l,beta,tau,k,s0):
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[7.116907860326869, 0.11475506927267327, 37.448059756741586, 21.026579459458937, 0.012127867153108762, 224.874571799234, 0.0002984136843706382, 83.07706638268168, 83.13822220978591, -0.7135572775125507]#4.3
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[6.897022816174391, 0.11476818612423122, 37.44357610472721, 21.021846204917956, 0.012775467613457202, 271.20756652485494, 0.00030678965981912124, 85.31798273147504, 82.99376032214923, -0.7104886291295281]#4.4
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[0.04534562330563463, 0.11670110724850419, 37.07004667382929, 20.685893496925463, 0.01819764889906327, 626.781836433764, 0.045336495274129494, 87.23744178601267, 83.00725427214945, -0.711923085973283]#4.5
-# k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[0.04524547728640656, 0.11700898847432833, 37.015771642528364, 20.632806300039096, 0.02166922706447096, 825.0083792679802, 0.0452451844858905, 88.43765967844969, 82.91777927425903, -0.7105963646864378]#4.6
-# A = 0.000526022188918724
+#k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[0.04524547728640656, 0.11700898847432833, 37.015771642528364, 20.632806300039096, 0.02166922706447096, 825.0083792679802, 0.0452451844858905, 88.43765967844969, 82.91777927425903, -0.7105963646864378]#4.6
+#A = 0.000526022188918724
 # plt.figure(1)
+# plt.xlabel('delay time (ps)',fontsize='xx-large')
+# plt.ylabel('Normalized Intensity (a.u.)',fontsize='xx-large')
 # plt.plot(delays[:],I2[:])
 # plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0,A,tdamp,Period,phi))
-# plt.figure()
+# plt.figure(2)
+# plt.xlabel('delay time (ps)',fontsize='xx-large')
+# plt.ylabel('Normalized Q-shift (a.u.)',fontsize='xx-large')
 # plt.plot(delays,Qr2)
-# plt.plot(delays,Dfunction(A,tdamp,Period,phi)*0.023)
+# plt.plot(delays,A*np.cos(2*np.pi*delays/Period+phi)*np.exp(-delays/tdamp)*0.023)
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[-0.024636867985090464, 0.16464726475724192, 24.106222129994386, 20.482345604090497, 1.3050847959121315e-13, 82.23675079089617, 0.07131708511709545, 551.0238129070931, 70.0105838507083, 2.811758869378817]
 #k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[-0.01031362813008135, 0.18040605425270817, 23.92691679792456, 20.333198240148114, -0.004727207420026125, 7.522175334273499, 0.010313628130081373, 93.89476191634894, 82.00121860027512, 2.2386693875428345] #v4.1
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period,phi=[-0.01022276932169172, 0.1815792906428479, 23.79768052880697, 20.212864749385304, -0.005764209892585393, 7.998475357098753, 0.010222769321691711, 94.89992251851103, 81.53695468329836, 2.199129483847944]#4.2
@@ -311,11 +341,18 @@ def lossfunction(xi_g,l,beta,tau,k,s0):
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-17.220919859133225, -0.007485477040553696, 10.000074059346565, 22.840556019991986, 0.012544114002177227, 1599.9999999864963, 0.018589548577829584, 4.595973845719744, 359.7388606996482]
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
-
+# plt.figure(1)
+# plt.plot(delays,I2)
+# plt.plot(delays,output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(2)
+# plt.plot(delays,-Qr2)
+# plt.plot(delays,-A*np.sin(2*np.pi*delays/Period)*np.exp(-delays/tdamp))
+# plt.show()
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period=[0.5179069975333074, 0.012299022435238555, 10.000129609133449, 13.125175790956877, 1.0000000116860974e-07, 31.404218965789948, 0.20221919800929875, 4.60494639334949, 71.74199447696962]
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period=[-120.0, -1.600000023841858, 143.32662635096315, 480.0, 1.7119335334853018e-07, 1.0000000116860974e-07, 1.0000000116860974e-07, 3.6821938027809327, 360.0]
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+
 
 
 
@@ -324,7 +361,13 @@ def lossfunction(xi_g,l,beta,tau,k,s0):
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period=[1.7306793649253163, -0.013877033789788284, 10.0, 0.5242215884579271, 1.0, 764.7393435102997, 1.0, 126.69645210929694, 204.05391680861544]
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
-
+# plt.figure(1)
+# plt.plot(delays,I2)
+# plt.plot(delays,output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(2)
+# plt.plot(delays,-Qr2)
+# plt.plot(delays,A*np.cos(2*np.pi*delays/Period)*np.exp(-delays/tdamp)/1000)
+# plt.show()
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period=[3.4020763408040966, -1.3393182087455433, 4.1561257588057705, 376.6217370633944, 0.5636156131021897, 228.22258217852132, 0.000387843843691376, 138.5182038878456, 194.72937306309046]
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period=[1.7306793649253163, -0.013877033789788284, 10.0, 0.5242215884579271, 1.0, 764.7393435102997, 1.0, 126.69645210929694, 102.0]
@@ -336,6 +379,8 @@ def lossfunction(xi_g,l,beta,tau,k,s0):
 
 
 
+
+
 #restrict period in 65~85 picoseconds
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period=[10.0, -0.9186404690295147, 5.4685485618236545, 12.000323668206557, 1.0000000116860974e-07, 1.0000000116860974e-07, 7.00410654528079, 6.901106233690124, 85.0]
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
@@ -343,23 +388,89 @@ def lossfunction(xi_g,l,beta,tau,k,s0):
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
 # k,s0,xi_g,l,beta,tau,A,tdamp,Period=[5.119326322937469, -1.0126345132279386, 4.219269407806254, 167.98235059258195, 0.46682576669326903, 1.0000020864557645e-07, 8.943706659008337, 5.678710908931804, 65.16863982914418]
 # print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(1)
+# plt.plot(delays,I2)
+# plt.plot(delays,output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(2)
+# plt.plot(delays,-Qr2)
+# plt.plot(delays,A*np.cos(2*np.pi*delays/Period)*np.exp(-delays/tdamp)/10000)
+# plt.show()
 
 
 
 #go back and try to fit directly from q-shift using PSO
-k,s0,xi_g,l,beta,tau=[-1.2825253703528963, -1.600000023841858, 1.0, 107.18897816374253, 0.857319691709224, 1.0000000116860974e-07]
-print(lossfunction(xi_g,l,beta,tau,k,s0))
-k,s0,xi_g,l,beta,tau=[1.821341988718683, 0.14941967495218372, 32.106473175645945, 67.101101322337, 0.20174751941184701, 1600.0]
-print(lossfunction(xi_g,l,beta,tau,k,s0))
-k,s0,xi_g,l,beta,tau=[1.5266419491724383, 0.12696610552519233, 39.70671126502544, 86.96695250627475, 0.20825976333460636, 1599.9124776337694]
-print(lossfunction(xi_g,l,beta,tau,k,s0))
+# k,s0,xi_g,l,beta,tau=[-1.2825253703528963, -1.600000023841858, 1.0, 107.18897816374253, 0.857319691709224, 1.0000000116860974e-07]
+# print(lossfunction(xi_g,l,beta,tau,k,s0))
+# k,s0,xi_g,l,beta,tau=[1.821341988718683, 0.14941967495218372, 32.106473175645945, 67.101101322337, 0.20174751941184701, 1600.0]
+# print(lossfunction(xi_g,l,beta,tau,k,s0))
+# k,s0,xi_g,l,beta,tau=[1.5266419491724383, 0.12696610552519233, 39.70671126502544, 86.96695250627475, 0.20825976333460636, 1599.9124776337694]
+# print(lossfunction(xi_g,l,beta,tau,k,s0))
 k,s0,xi_g,l,beta,tau=[-6.775588403827548, 0.21651306676143417, 25.378883143585398, 21.414358384982364, 0.2039517978992194, 1596.580751258942]
-print(lossfunction(xi_g,l,beta,tau,k,s0))
-k,s0,xi_g,l,beta,tau=[3.9045677066495053, 1.1023518810431414, 4.514962345838815, 33.13183387986024, 0.2063924230597383, 1600.0]
-print(lossfunction(xi_g,l,beta,tau,k,s0))
-k,s0,xi_g,l,beta,tau=[2.430506868722627, 0.871923178049203, 5.788849781787501, 54.29071786951386, 0.20805118785770246, 1600.0]
-print(lossfunction(xi_g,l,beta,tau,k,s0))
+#print(lossfunction(xi_g,l,beta,tau,k,s0))
 plt.figure(1)
+plt.xlabel('delay time (ps)',fontsize='xx-large')
+plt.ylabel('Normalized Intensity (a.u.)',fontsize='xx-large')
 plt.plot(delays[:],I2[:])
 plt.plot(delays[:],output(xi_g,l,beta,tau,k,s0))
 plt.show()
+# k,s0,xi_g,l,beta,tau=[3.9045677066495053, 1.1023518810431414, 4.514962345838815, 33.13183387986024, 0.2063924230597383, 1600.0]
+# print(lossfunction(xi_g,l,beta,tau,k,s0))
+# k,s0,xi_g,l,beta,tau=[2.430506868722627, 0.871923178049203, 5.788849781787501, 54.29071786951386, 0.20805118785770246, 1600.0]
+# print(lossfunction(xi_g,l,beta,tau,k,s0))
+
+# sin without normalization
+# k,s0,xi_g,l,beta,tau,A,tdamp,Period=[4.476364172735563, -1.073598800149505, 5.24321849571958, 95.12169749186138, 0.04712387405290875, 604.5187614753669, 4.600953507748357, 6.095785136545292, 81.44539572362294]
+# print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# k,s0,xi_g,l,beta,tau,A,tdamp,Period=[3.8326094196013143, -1.2343261767842026, 4.738350966191797, 61.255158197166104, 0.04915021895539909, 439.2608921222005, 3.4828871395878935, 6.799060731367695, 81.40071620122777]
+# print(lossfunction(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(1)
+# plt.plot(delays,I2)
+# plt.plot(delays,output(xi_g,l,beta,tau,k,s0,A,tdamp,Period))
+# plt.figure(2)
+# plt.plot(delays,-Qr2)
+# plt.plot(delays,-A*np.sin(2*np.pi*delays/Period)*np.exp(-delays/tdamp)/1000)
+# plt.show()
+
+
+# in-plane motion
+# K0, xi, l, beta, tau = [5614397297237.718, 500.0, 41.156286085641796, 0.740689114746905, 1.0000000116860974e-07]
+# print(lossfunction(K0, xi, l, beta, tau))
+# K0, xi, l, beta, tau =[371685.9457318146, 500.0, 24.000376371309986, 0.24863762888340868, 1.0000000116860974e-07]
+# K0, xi, l, beta, tau =[1000.0, 981205.1275281504, 10.0, 0.04455400826610489, 1.0000000116860974e-07]
+# print(K0-np.sqrt(K0**2-Qr2))
+# plt.figure(1)
+# plt.plot(delays,I2)
+# plt.plot(delays,output(K0, xi, l, beta, tau))
+# plt.figure(2)
+# plt.plot(delays,-Qr2)
+# plt.plot(delays,-A*np.sin(2*np.pi*delays/Period)*np.exp(-delays/tdamp)/1000)
+plt.show()
+
+#7855.002298213095, 171.41530259621945, 11.595752972370084
+# xi = 200
+
+# l = 50
+# s = np.linspace(0,0.0005,1000)
+# frac2 = 1+(xi*s)**2
+# frac1 = np.sin(np.pi*l*np.sqrt(frac2)/xi)**2
+# I = frac1/frac2
+# I0 = I[0]
+# ratio = (I-I0)/I0
+# plt.figure()
+# plt.plot(s,I)
+# plt.show()
+
+# from sympy import *
+# s = Symbol('s')
+# xi = Symbol('xi')
+# l = Symbol('l')
+# frac1 = 1+(xi*s)**2
+# frac2 = sin(pi*l/xi*sqrt(frac1))**2
+# I = frac2/frac1
+# #tmp = series(I,s,0,3)
+# tmp = diff(I,s)
+# pprint(tmp)
+
+
+
+

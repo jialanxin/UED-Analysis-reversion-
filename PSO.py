@@ -22,8 +22,8 @@ class ParticleGroup():
     def __init__(self,group_size,weight,c1,c2,name):
         self.name = name
         self.group_size = group_size
-        self.x_down_group = torch.Tensor([-120.0,-1.6,1.0,1e-7,1e-7,1e-7]).repeat((group_size,1)).double()
-        self.x_up_group = torch.Tensor([10.0,1.6,200.0,480.0,1.0,1600.0]).repeat((group_size,1)).double()
+        self.x_down_group = torch.Tensor([9e3,1e-7,10.0,1e-7,1e-7]).repeat((group_size,1)).double()
+        self.x_up_group = torch.Tensor([2e4,1e6,70.0,1.0,100]).repeat((group_size,1)).double()
         self.x_cur_group = self.ramdom_generator().double()
         self.v_cur_group = self.x_cur_group.div(5)
         self.v_up_group = self.x_up_group.div(5)
@@ -44,39 +44,35 @@ class ParticleGroup():
         self.c1 = c1
         self.c2 = c2
     def ramdom_generator(self):   
-        x_init = torch.rand((self.group_size,6))
+        x_init = torch.rand((self.group_size,5))
         x_cat = x_init.mul(self.x_up_group.float().sub(self.x_down_group.float()).add(self.x_down_group.float()))
         print('ram gen finished')
         return x_cat
     def Lossfunction(self):
-        d = self.input_Qr2.neg()
-        k = self.x_cur_group[:,0].reshape((self.group_size,1))
-        s0 = self.x_cur_group[:,1].reshape((self.group_size,1))
-        s = d.mul(k).add(s0)
-        del k,s0,d
-        gc.collect()
-        xi = self.x_cur_group[:,2].reshape((self.group_size,1))
+        # A = self.x_cur_group[:,6].reshape((self.group_size,1))
+        # tdamp = self.x_cur_group[:,7].reshape((self.group_size,1))
+        # Period = self.x_cur_group[:,8].reshape((self.group_size,1))
+        # d = torch.sin(self.input_delays.mul(2*math.pi).div(Period)).neg().mul(A).mul(torch.exp(self.input_delays.neg().div(tdamp)))
+        # k = self.x_cur_group[:,0].reshape((self.group_size,1))
+        # s0 = self.x_cur_group[:,1].reshape((self.group_size,1))
+
+        ## K0, xi, l, beta, tau
+        K0 = self.x_cur_group[:,0].reshape((self.group_size,1))
+        s = K0.sub(torch.sqrt(K0.pow(2).sub(self.input_Qr2.pow(2))))
+        xi = self.x_cur_group[:,1].reshape((self.group_size,1))
         frac1 = (s.mul(xi)).pow(2).add(1)
-        del s
-        gc.collect()
-        l = self.x_cur_group[:,3].reshape((self.group_size,1))
+        l = self.x_cur_group[:,2].reshape((self.group_size,1))
         frac2 = torch.sin(torch.sqrt(frac1).div(xi).mul(l).mul(math.pi)).pow(2)
-        del xi,l
-        gc.collect()
-        beta = self.x_cur_group[:,4].reshape((self.group_size,1))
-        tau = self.x_cur_group[:,5].reshape((self.group_size,1))
+        beta = self.x_cur_group[:,3].reshape((self.group_size,1))
+        tau = self.x_cur_group[:,4].reshape((self.group_size,1))
         frac3 = torch.exp(self.input_delays.neg().div(tau)).mul(beta).add(1).sub(beta)
-        del beta,tau
-        gc.collect()
         I=frac2.mul(frac3).div(frac1)
-        del frac1,frac2,frac3
-        gc.collect()
-        Loss = torch.sum(self.validation_data.sub(I).pow(2),1,keepdim = True)
+        I0 = I[:,0].reshape((self.group_size,1))
+        ratio = I.sub(I0).div(I0)
+        Loss = torch.sum(self.validation_data.sub(ratio).pow(2),1,keepdim = True)
         where_are_nan = torch.isnan(Loss)
         source_inf = torch.full((where_are_nan.sum(),),float('inf')).double()
         Loss.masked_scatter_(where_are_nan,source_inf)
-        del I, where_are_nan, source_inf
-        gc.collect()
         return Loss
     def GD(self,x):
         self.x_cur_group.requires_grad_()
@@ -88,14 +84,11 @@ class ParticleGroup():
             source = torch.ones((mask2.sum(),)).double()
             no_nan_grad = pre_process_grad_with_nan.masked_scatter_(mask2,source)   
             self.v_cur_group = self.v_cur_group.mul(0.9).sub(no_nan_grad)
-            del pre_process_grad_with_nan, mask2, source, no_nan_grad
             self.x_cur_group = self.x_cur_group.add(self.v_cur_group.mul(0.1/x))
             self.x_cur_group = torch.min(self.x_cur_group,self.x_up_group)
             self.x_cur_group = torch.max(self.x_cur_group,self.x_down_group)
             self.v_cur_group = torch.min(self.v_cur_group,self.v_up_group)
             self.v_cur_group = torch.max(self.v_cur_group,self.v_down_group)
-        del loss_list_cur
-        gc.collect()
     def evolution(self):
         with torch.no_grad():
             r1,r2 = torch.rand(2).double()
@@ -105,8 +98,6 @@ class ParticleGroup():
                 print('variation happen')
                 x_cur_variation_group = torch.rand_like(self.x_cur_group).mul(2)
                 self.x_cur_group = x_cur_variation_group.mul(self.x_cur_group)
-                del x_cur_variation_group
-                gc.collect()
             self.x_cur_group = torch.min(self.x_cur_group,self.x_up_group)
             self.x_cur_group = torch.max(self.x_cur_group,self.x_down_group)
             self.v_cur_group = torch.min(self.v_cur_group,self.v_up_group)
@@ -119,11 +110,7 @@ class ParticleGroup():
             print('efficiency:',mask1.sum().item()*100/self.group_size,'%')
             temp = torch.masked_select(self.x_cur_group,mask1)
             self.x_history_best_group = self.x_history_best_group.masked_scatter(mask1,temp)
-            del mask1,temp
-            gc.collect()
             self.loss_history_best_group = torch.min(self.loss_history_best_group,loss_list_cur)
-            del loss_list_cur
-            gc.collect()
             loss_total_cur, index = torch.min(self.loss_history_best_group,0)
             if torch.lt(loss_total_cur,self.loss_history_best_total):
                 self.x_history_best_total = self.x_history_best_group[index,:]
@@ -134,16 +121,13 @@ class ParticleGroup():
                 with open('x_history_best_total.txt', 'a') as file:
                     file.write(str(self.loss_history_best_total.item())+'\n')
                     file.write(str(self.x_history_best_total.tolist())+'\n')
-            del loss_total_cur, index
-            gc.collect()
-
 
                 
 
     
 
-particlegroup1 = ParticleGroup(400000,0.3,3.0,0.3,'Group1')
-particlegroup2 = ParticleGroup(400000,0.3,3.0,3.0,'Group2')
+particlegroup1 = ParticleGroup(800000,1,0.5,1.5,'Group1')
+particlegroup2 = ParticleGroup(800000,1.0,0.5,2.0,'Group2')
 def work1():
     for i in range(1000):
         print('epoch',i)
